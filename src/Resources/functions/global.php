@@ -6,6 +6,10 @@
  * @author Danny van Kooten
  */
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Prints the Koko Analytics tracking script.
  *

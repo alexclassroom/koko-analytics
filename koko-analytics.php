@@ -8,6 +8,7 @@ Description: Privacy-friendly and efficient statistics for your WordPress site.
 Author: ibericode
 Author URI: https://www.ibericode.com/
 Author Email: support@kokoanalytics.com
+Requires PHP: 7.4
 Text Domain: koko-analytics
 License: GPL-3.0-or-later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -36,11 +37,11 @@ namespace KokoAnalytics;
 
 use WP_CLI;
 
-// don't run if PHP version is lower than 7.4
 // prevent direct file access
-if (PHP_VERSION_ID < 70400 || ! \defined('ABSPATH')) {
-    return;
-}
+defined('ABSPATH') || exit;
+
+// don't run on PHP < 7.4
+PHP_VERSION_ID >= 70400 || exit;
 
 define('KOKO_ANALYTICS_VERSION', '2.3.5');
 define('KOKO_ANALYTICS_PLUGIN_FILE', __FILE__);

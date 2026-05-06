@@ -10,6 +10,10 @@ namespace KokoAnalytics;
 
 use KokoAnalytics\Normalizers\Path;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Script_Loader
 {
     // WARNING: is used in Koko Analytics Pro (in its static form)

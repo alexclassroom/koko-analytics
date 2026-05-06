@@ -10,6 +10,10 @@ namespace KokoAnalytics;
 
 use WP_Query;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Returns a closure that instantiates the class and calls the given method when called
  *

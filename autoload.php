@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require __DIR__ . '/src/Resources/functions/functions.php';
 require __DIR__ . '/src/Resources/functions/global.php';
 require __DIR__ . '/src/Resources/functions/collect.php';

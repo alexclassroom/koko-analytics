@@ -1,4 +1,8 @@
-
+<?php
+if (!defined('ABSPATH')) {
+    exit;
+}
+?>
 <h2 class="mt-0 mb-3"><?= esc_html__('Help', 'koko-analytics') ?></h2>
  <div class="mb-5">
     <ul class="ul-square">

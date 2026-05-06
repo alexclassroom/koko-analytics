@@ -5,6 +5,10 @@ namespace KokoAnalytics;
 use KokoAnalytics\Shortcodes\Shortcode_Site_Counter;
 use WP_Query;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Blocks
 {
     public function hook(): void

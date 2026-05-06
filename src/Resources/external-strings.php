@@ -2,6 +2,10 @@
 
 // i18n strings for koko-analytics-pro
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 // ../koko-analytics-pro/src/Column/Table.php#120
 __('Number of days to use for pageviews column', 'koko-analytics');
 

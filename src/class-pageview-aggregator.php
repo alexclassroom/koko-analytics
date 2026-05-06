@@ -7,4 +7,8 @@
 
 // TODO: Remove this file after Jul 24, 2027
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require __DIR__ . '/Pageview_Aggregator.php';

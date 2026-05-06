@@ -12,6 +12,10 @@ use KokoAnalytics\Dashboard_Widget;
 
 use function KokoAnalytics\lazy;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Controller
 {
     public function hook(): void

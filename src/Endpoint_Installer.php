@@ -10,6 +10,10 @@ namespace KokoAnalytics;
 
 use WP_Error;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Endpoint_Installer
 {
     public function get_file_name(): string

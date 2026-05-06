@@ -7,6 +7,10 @@ use KokoAnalytics\Shortcodes\Shortcode_Site_Counter;
 use KokoAnalytics\Widgets\Most_Viewed_Posts_Widget;
 use WP_Admin_Bar;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Controller
 {
     public function hook(): void
