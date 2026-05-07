@@ -62,7 +62,7 @@ class Data_Export
     {
         $version = (int) get_option('koko_analytics_migrations', 0);
         fwrite($stream, "DELETE FROM {$this->db->options} WHERE option_name = 'koko_analytics_migrations';\n");
-        fwrite($stream, "INSERT INTO {$this->db->options} (option_name, option_value, autoload) VALUES ('koko_analytics_migrations', '{$version}', 'on');\n");
+        fprintf($stream, "INSERT INTO {$this->db->options} (option_name, option_value, autoload) VALUES ('koko_analytics_migrations', '%d', 'on');\n", $version);
     }
 
     private function export_site_stats($stream): void
@@ -84,7 +84,14 @@ class Data_Export
         fwrite($stream, "INSERT INTO {$this->db->prefix}koko_analytics_site_stats (date, visitors, pageviews) VALUES ");
         $prefix = '';
         foreach ($rows as $s) {
-            fwrite($stream, "{$prefix}(\"{$s->date}\",{$s->visitors},{$s->pageviews})");
+            fprintf(
+                $stream,
+                '%s("%s",%d,%d)',
+                $prefix,
+                esc_sql($s->date),
+                (int) $s->visitors,
+                (int) $s->pageviews
+            );
             $prefix = ',';
         }
         fwrite($stream, ";\n");
@@ -136,7 +143,16 @@ class Data_Export
         fwrite($stream, "INSERT INTO {$this->db->prefix}koko_analytics_post_stats (date, path_id, post_id, visitors, pageviews) VALUES ");
         $prefix = '';
         foreach ($rows as $s) {
-            fwrite($stream, "{$prefix}(\"{$s->date}\",{$s->path_id},{$s->post_id},{$s->visitors},{$s->pageviews})");
+            fprintf(
+                $stream,
+                '%s("%s",%d,%d,%d,%d)',
+                $prefix,
+                esc_sql($s->date),
+                (int) $s->path_id,
+                (int) $s->post_id,
+                (int) $s->visitors,
+                (int) $s->pageviews
+            );
             $prefix = ',';
         }
         fwrite($stream, ";\n");
@@ -191,7 +207,15 @@ class Data_Export
         foreach ($rows as $s) {
             $unique = $s->unique_hits ?: $s->visitors ?: 0;
             $total = $s->hits ?: $s->pageviews ?: 0;
-            fwrite($stream, "{$prefix}(\"{$s->date}\",{$s->id},{$unique},{$total})");
+            fprintf(
+                $stream,
+                '%s("%s",%d,%d,%d)',
+                $prefix,
+                esc_sql($s->date),
+                (int) $s->id,
+                (int) $unique,
+                (int) $total
+            );
             $prefix = ',';
         }
         fwrite($stream, ";\n");
