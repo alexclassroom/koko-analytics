@@ -4,9 +4,55 @@ defined('ABSPATH') or exit;
 /**
  * @var array $settings
  */
+
+$database_stats = \KokoAnalytics\get_database_stats()->get();
 ?>
 
 <h2 class="mt-0 mb-3"><?= esc_html__('Data settings', 'koko-analytics') ?></h2>
+
+<div class="mb-5">
+    <h3 class="mb-2"><?php esc_html_e('Database usage', 'koko-analytics'); ?></h3>
+    <p>
+        <?php
+        printf(
+            esc_html__('Koko Analytics is using %1$s across approximately %2$s rows.', 'koko-analytics'),
+            esc_html(size_format($database_stats['total_size'])),
+            esc_html(number_format_i18n($database_stats['total_rows']))
+        );
+        ?>
+    </p>
+    <p class="description"><?php esc_html_e('Keeping less historical data can make your dashboard load faster and helps database migrations finish in constrained hosting environments. Use the setting below to automatically delete older statistics.', 'koko-analytics'); ?></p>
+    <?php if (count($database_stats['tables']) > 0) : ?>
+        <details>
+            <summary><?php esc_html_e('Show database table details', 'koko-analytics'); ?></summary>
+            <table class="widefat striped mt-2">
+                <thead>
+                    <tr>
+                        <th><?php esc_html_e('Table', 'koko-analytics'); ?></th>
+                        <th><?php esc_html_e('Rows', 'koko-analytics'); ?></th>
+                        <th><?php esc_html_e('Data size', 'koko-analytics'); ?></th>
+                        <th><?php esc_html_e('Index size', 'koko-analytics'); ?></th>
+                        <th><?php esc_html_e('Total size', 'koko-analytics'); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($database_stats['tables'] as $table) : ?>
+                        <tr>
+                            <td><code><?= esc_html($table['name']) ?></code></td>
+                            <td><?= esc_html('~' . number_format_i18n($table['rows'])) ?></td>
+                            <td><?= esc_html(size_format($table['data_size'])) ?></td>
+                            <td><?= esc_html(size_format($table['index_size'])) ?></td>
+                            <td><?= esc_html(size_format($table['total_size'])) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </details>
+    <?php else : ?>
+        <p><?php esc_html_e('No Koko Analytics database tables found.', 'koko-analytics'); ?></p>
+    <?php endif; ?>
+</div>
+
 <form method="POST" action="">
     <input type="hidden" name="koko_analytics_action" value="save_settings">
     <?php wp_nonce_field('koko_analytics_save_settings'); ?>
@@ -24,6 +70,7 @@ defined('ABSPATH') or exit;
 
 <div class="mb-5">
     <h3 id="import-data" class="mb-2"><?php esc_html_e('Import data', 'koko-analytics'); ?></h3>
+    <h4><?php esc_html_e('Import from an export file', 'koko-analytics'); ?></h4>
     <p><?php esc_html_e('You can import a dataset from an earlier export into Koko Analytics using the form below.', 'koko-analytics'); ?></p>
     <form method="POST" action="" enctype="multipart/form-data" onsubmit="return confirm('<?php esc_attr_e('Are you sure you want to import the given dataset? This will replace your current data.', 'koko-analytics'); ?>')">
         <?php wp_nonce_field('koko_analytics_import_data'); ?>
@@ -36,11 +83,8 @@ defined('ABSPATH') or exit;
             <input type="submit" value="<?php esc_attr_e('Import', 'koko-analytics'); ?>" class="btn btn-secondary btn-sm" />
         </div>
     </form>
-</div>
 
-
-<div class="mb-5">
-    <h3><?php esc_html_e('Import from another plugin', 'koko-analytics'); ?></h3>
+    <h4 class="mt-4"><?php esc_html_e('Import from another plugin', 'koko-analytics'); ?></h4>
     <p><?= esc_html__('If you\'re coming from another statistics plugin, you may be able to import your historical data using one of our importers listed below.', 'koko-analytics'); ?></p>
 
     <ul class="ul-square">

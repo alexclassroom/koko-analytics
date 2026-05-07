@@ -4,12 +4,14 @@ if (!defined('ABSPATH')) {
 }
 
 $migrations = \KokoAnalytics\get_migrations();
+$database_stats = \KokoAnalytics\get_database_stats()->get();
 $last_aggregation_at = (int) get_option('koko_analytics_last_aggregation_at', 0);
 $debug_info = [
     'PHP: ' . PHP_VERSION,
     'MySQL: ' . $GLOBALS['wpdb']->db_version(),
     'Koko Analytics: ' . KOKO_ANALYTICS_VERSION,
     '    Database version: ' . $migrations->get_current_version() . ' / ' . $migrations->get_latest_version() . ' (current / latest)',
+    '    Database size: ' . size_format($database_stats['total_size']) . ' across ~' . number_format_i18n($database_stats['total_rows']) . ' rows',
     '    Last aggregation: ' . date(DATE_W3C, $last_aggregation_at) . ' (' . (time() - $last_aggregation_at) . ' seconds ago)',
 ];
 
