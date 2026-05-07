@@ -51,6 +51,7 @@ class Data_Export
         $this->export_referrer_labels($fh);
         $this->export_referrer_stats($fh);
 
+        // hook for pro plugin to export its database tables and write to this stream
         do_action('koko_analytics_write_data_export', $fh);
 
         fclose($fh);
@@ -69,8 +70,10 @@ class Data_Export
         // table schema
         fwrite($stream, "DROP TABLE IF EXISTS {$this->db->prefix}koko_analytics_site_stats;\n");
         $create_table_sql = $this->db->get_var("SHOW CREATE TABLE {$this->db->prefix}koko_analytics_site_stats", 1);
-        fwrite($stream, $create_table_sql);
-        fwrite($stream, ";\n");
+        if ($create_table_sql) {
+            fwrite($stream, $create_table_sql);
+            fwrite($stream, ";\n");
+        }
 
         // table contents
         $rows = $this->db->get_results("SELECT * FROM {$this->db->prefix}koko_analytics_site_stats;");
@@ -93,8 +96,10 @@ class Data_Export
         // table schema
         fwrite($stream, "DROP TABLE IF EXISTS {$this->db->prefix}koko_analytics_paths;\n");
         $create_table_sql = $this->db->get_var("SHOW CREATE TABLE {$this->db->prefix}koko_analytics_paths", 1);
-        fwrite($stream, $create_table_sql);
-        fwrite($stream, ";\n");
+        if ($create_table_sql) {
+            fwrite($stream, $create_table_sql);
+            fwrite($stream, ";\n");
+        }
 
         // table contents
         $rows = $this->db->get_results("SELECT * FROM {$this->db->prefix}koko_analytics_paths;");
@@ -117,8 +122,10 @@ class Data_Export
         // table schema
         fwrite($stream, "DROP TABLE IF EXISTS {$this->db->prefix}koko_analytics_post_stats;\n");
         $create_table_sql = $this->db->get_var("SHOW CREATE TABLE {$this->db->prefix}koko_analytics_post_stats", 1);
-        fwrite($stream, $create_table_sql);
-        fwrite($stream, ";\n");
+        if ($create_table_sql) {
+            fwrite($stream, $create_table_sql);
+            fwrite($stream, ";\n");
+        }
 
         // table contents
         $rows = $this->db->get_results("SELECT * FROM {$this->db->prefix}koko_analytics_post_stats;");
@@ -140,9 +147,12 @@ class Data_Export
     {
         // table schema
         fwrite($stream, "DROP TABLE IF EXISTS {$this->db->prefix}koko_analytics_referrer_labels;\n");
+
         $create_table_sql = $this->db->get_var("SHOW CREATE TABLE {$this->db->prefix}koko_analytics_referrer_labels", 1);
-        fwrite($stream, $create_table_sql);
-        fwrite($stream, ";\n");
+        if ($create_table_sql) {
+            fwrite($stream, $create_table_sql);
+            fwrite($stream, ";\n");
+        }
 
         // table contents
         $rows = $this->db->get_results("SELECT * FROM {$this->db->prefix}koko_analytics_referrer_labels;");
@@ -165,8 +175,10 @@ class Data_Export
         // table schema
         fwrite($stream, "DROP TABLE IF EXISTS {$this->db->prefix}koko_analytics_referrer_stats;\n");
         $create_table_sql = $this->db->get_var("SHOW CREATE TABLE {$this->db->prefix}koko_analytics_referrer_stats", 1);
-        fwrite($stream, $create_table_sql);
-        fwrite($stream, ";\n");
+        if ($create_table_sql) {
+            fwrite($stream, $create_table_sql);
+            fwrite($stream, ";\n");
+        }
 
         // table contents
         $rows = $this->db->get_results("SELECT * FROM {$this->db->prefix}koko_analytics_referrer_stats;");
@@ -177,7 +189,9 @@ class Data_Export
         fwrite($stream, "INSERT INTO {$this->db->prefix}koko_analytics_referrer_stats (date, id, unique_hits, hits) VALUES ");
         $prefix = '';
         foreach ($rows as $s) {
-            fwrite($stream, "{$prefix}(\"{$s->date}\",{$s->id},{$s->unique_hits},{$s->hits})");
+            $unique = $s->unique_hits ?: $s->visitors ?: 0;
+            $total = $s->hits ?: $s->pageviews ?: 0;
+            fwrite($stream, "{$prefix}(\"{$s->date}\",{$s->id},{$unique},{$total})");
             $prefix = ',';
         }
         fwrite($stream, ";\n");
