@@ -134,7 +134,7 @@ class Controller
         }
 
         // Run integer-based migrations going forward
-        $m = new Migrations_v2(KOKO_ANALYTICS_PLUGIN_DIR . '/migrations/', 'koko_analytics_migrations');
+        $m = get_migrations();
         return $m->ensure_current();
     }
 

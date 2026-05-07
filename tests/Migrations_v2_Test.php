@@ -12,6 +12,8 @@ final class Migrations_v2_Test extends TestCase
     public function testWithAllMigrationsPending(): void
     {
         $m = new Migrations_v2(__DIR__ . '/migrations', 'koko_analytics_version');
+        self::assertSame(0, $m->get_current_version());
+        self::assertSame(10, $m->get_latest_version());
         self::assertEquals([
             '001-the-first.php',
             '002-the-middle.php',

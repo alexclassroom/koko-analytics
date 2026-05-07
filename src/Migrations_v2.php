@@ -29,19 +29,50 @@ class Migrations_v2
 
     public function get_pending(): array
     {
-        $version_from = (int) get_option($this->option_name, 0);
+        $version_from = $this->get_current_version();
+        return array_column(array_filter($this->get_all(), function ($migration) use ($version_from) {
+            return $migration['version'] > $version_from;
+        }), 'file');
+    }
+
+    public function get_current_version(): int
+    {
+        return (int) get_option($this->option_name, 0);
+    }
+
+    public function get_latest_version(): int
+    {
+        $migrations = $this->get_all();
+        if (count($migrations) === 0) {
+            return 0;
+        }
+
+        return max(array_column($migrations, 'version'));
+    }
+
+    /**
+     * @return array<int, array{file: string, version: int}>
+     */
+    protected function get_all(): array
+    {
         $files = scandir($this->directory, SCANDIR_SORT_ASCENDING);
         if ($files === false || count($files) === 0) {
             return [];
         }
 
-        return array_values(array_filter($files, function ($file) use ($version_from) {
+        $migrations = [];
+        foreach ($files as $file) {
             if (! preg_match('/^(\d+)\-[a-zA-Z0-9_\-]+\.php$/', $file, $matches)) {
-                return false;
+                continue;
             }
-            $version = (int) $matches[1];
-            return $version > $version_from;
-        }));
+
+            $migrations[] = [
+                'file' => $file,
+                'version' => (int) $matches[1],
+            ];
+        }
+
+        return $migrations;
     }
 
     public function acquire_lock(): bool

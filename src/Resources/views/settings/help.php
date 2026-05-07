@@ -2,6 +2,21 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+$migrations = \KokoAnalytics\get_migrations();
+$last_aggregation_at = (int) get_option('koko_analytics_last_aggregation_at', 0);
+$debug_info = [
+    'PHP: ' . PHP_VERSION,
+    'MySQL: ' . $GLOBALS['wpdb']->db_version(),
+    'Koko Analytics: ' . KOKO_ANALYTICS_VERSION,
+    '    Database version: ' . $migrations->get_current_version() . ' / ' . $migrations->get_latest_version() . ' (current / latest)',
+    '    Last aggregation: ' . date(DATE_W3C, $last_aggregation_at) . ' (' . (time() - $last_aggregation_at) . ' seconds ago)',
+];
+
+if (defined('KOKO_ANALYTICS_PRO_VERSION')) {
+    $debug_info[] = 'Koko Analytics Pro: ' . KOKO_ANALYTICS_PRO_VERSION;
+    $debug_info[] = '    Database version: ' . get_option('koko_analytics_pro_version', '');
+}
 ?>
 <h2 class="mt-0 mb-3"><?= esc_html__('Help', 'koko-analytics') ?></h2>
  <div class="mb-5">
@@ -45,20 +60,5 @@ if (count($posts) > 0) { ?>
 
 <div class="mb-5">
     <h2><?= esc_html__('Debug info', 'koko-analytics') ?></h2>
-    <textarea style="font-family: monospace; font-size: 14px;" class="ka-input" rows="8" spellcheck="false" onfocus="this.select()" readonly>
-PHP: <?= esc_html(PHP_VERSION) ?>
-
-MySQL: <?= esc_html($GLOBALS['wpdb']->db_version()) ?>
-
-Koko Analytics: <?= esc_html(KOKO_ANALYTICS_VERSION) ?>
-
-    Database version: <?= esc_html(get_option('koko_analytics_migrations', 0)) ?>
-
-    Last aggregation: <?= date(DATE_W3C, get_option('koko_analytics_last_aggregation_at', 0)) ?> (<?= (int) (time() - get_option('koko_analytics_last_aggregation_at', 0)) ?> seconds ago)
-<?php if (defined('KOKO_ANALYTICS_PRO_VERSION')) : ?>
-Koko Analytics Pro: <?= KOKO_ANALYTICS_PRO_VERSION ?>
-
-    Database version: <?= esc_html(get_option('koko_analytics_pro_version', '')) ?>
-<?php endif; ?>
-    </textarea>
+    <textarea style="font-family: monospace; font-size: 14px;" class="ka-input" rows="8" spellcheck="false" onfocus="this.select()" readonly><?= esc_textarea(implode("\n", $debug_info)) ?></textarea>
 </div>
